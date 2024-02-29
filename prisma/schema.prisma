@@ -1,0 +1,578 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  role      String?   @default("user")
+  imageId   Int?      @unique
+  media     Media?    @relation(fields: [imageId], references: [id])
+  createdAt DateTime? @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Pages {
+  id           Int       @id @unique @default(autoincrement())
+  name         String?
+  title        String?
+  description  String?   @db.Text
+  seoKeywords  String?
+  url          String?
+  sortId       Int       @unique
+  showInPages  Boolean?  @default(true)
+  isExpandable Boolean?  @default(false)
+  content      Content[]
+  seoMetaId    Int?      @unique
+  seoMeta      SeoMeta?  @relation(fields: [seoMetaId], references: [id])
+  createdAt    DateTime? @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Content {
+  id              Int           @id @unique @default(autoincrement())
+  name            String?
+  title           String?
+  description     String?       @db.LongText
+  subTitle        String?
+  buttonText      String?
+  buttonUrl       String?
+  referenceId     Int?
+  pageId          Int?
+  sortId          Int?
+  createByDefault Boolean?      @default(true)
+  imageId         Int?          @unique
+  media           Media?        @relation(fields: [imageId], references: [id])
+  pages           Pages?        @relation(fields: [pageId], references: [id])
+  destinations    Destinations? @relation(fields: [referenceId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model Media {
+  id                          Int                  @id @default(autoincrement())
+  desktopMediaUrl             String?
+  mobileMediaUrl              String?
+  type                        String?              @default("image")
+  createdAt                   DateTime             @default(now())
+  updatedAt                   DateTime             @updatedAt
+  banner                      Banner?
+  holidayType                 HolidayType?
+  thingsToDo                  ThingsToDo?
+  seasonToVisit               SeasonToVisit?
+  highlights                  Highlights?
+  planService                 PlanService?
+  configuration               Configuration?
+  inspirations                Inspirations?
+  inspirationDetail           InspirationDetail?
+  partners                    Partners?
+  destinationFeature          DestinationFeatures?
+  placeToVisit                PlaceToVisit?
+  content                     Content?
+  reviews                     Reviews?
+  attraction                  Attraction?
+  gallery                     Gallery?
+  clientImageTestimonial      Testimonial[]        @relation("ClientImage")
+  destinationImageTestimonial Testimonial[]        @relation("DestinationImage")
+  bannerImageTour             Tours[]              @relation("TourBannerImage")
+  accommodationImageTour      Tours[]              @relation("AccommodationImage")
+  Users                       Users?
+}
+
+model Destinations {
+  id                        Int                         @id @default(autoincrement())
+  name                      String                      @unique
+  description               String?                     @db.Text
+  seoMetaId                 Int?                        @unique
+  seoMeta                   SeoMeta?                    @relation(fields: [seoMetaId], references: [id])
+  content                   Content[]
+  destinationFeatureOffered DestinationFeatureOffered[]
+  tourDestinations          TourDestinations[]
+  thingsToDo                ThingsToDo[]
+  seasonToVisit             SeasonToVisit[]
+  placeToVisit              PlaceToVisit[]
+  inspirations              Inspirations[]
+  gallery                   Gallery[]
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DestinationFeatures {
+  id                         Int                         @id @default(autoincrement())
+  name                       String?
+  imageId                    Int                         @unique
+  media                      Media?                      @relation(fields: [imageId], references: [id])
+  destinationFeaturedOffered DestinationFeatureOffered[]
+  isActive                   Boolean                     @default(true)
+  createdAt                  DateTime                    @default(now())
+  updatedAt                  DateTime                    @updatedAt
+}
+
+model DestinationFeatureOffered {
+  id                   Int                 @id @default(autoincrement())
+  description          String?             @db.Text
+  destinationId        Int
+  destinations         Destinations        @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  destinationFeatures  DestinationFeatures @relation(fields: [destinationFeatureId], references: [id], onDelete: Cascade)
+  destinationFeatureId Int
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+}
+
+model HolidayType {
+  id                     Int               @id @unique @default(autoincrement())
+  name                   String            @unique
+  description            String?           @db.LongText
+  mainSectionHeading     String?
+  mainSectionDescription String?           @db.LongText
+  imageId                Int               @unique
+  media                  Media             @relation(fields: [imageId], references: [id])
+  highlights             Highlights[]
+  tourHoliDayType        TourHolidayType[]
+  inspirations           Inspirations[]
+  seoMetaId              Int?              @unique
+  seoMeta                SeoMeta?          @relation(fields: [seoMetaId], references: [id])
+  isActive               Boolean?          @default(true)
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+}
+
+model Highlights {
+  id            Int          @id @default(autoincrement())
+  description   String?      @db.LongText
+  imageId       Int          @unique
+  media         Media?       @relation(fields: [imageId], references: [id])
+  holidayType   HolidayType? @relation(fields: [holidayTypeId], references: [id], onDelete: Cascade)
+  holidayTypeId Int?
+  tour          Tours?       @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tourId        Int?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @default(now())
+}
+
+model Inspirations {
+  id                Int                 @id @default(autoincrement())
+  title             String?
+  description       String?             @db.LongText
+  isFeatured        Boolean?            @default(false)
+  isActive          Boolean             @default(true)
+  readingTime       Int?
+  imageId           Int                 @unique
+  media             Media?              @relation(fields: [imageId], references: [id])
+  inspirationDetail InspirationDetail[]
+  destination       Destinations[]
+  destinationId     Int?
+  holidayType       HolidayType[]
+  holidayTypeId     Int?
+  seoMetaId         Int?                @unique
+  seoMeta           SeoMeta?            @relation(fields: [seoMetaId], references: [id])
+  isDeleted         Boolean?            @default(false)
+  sortId            Int?
+  inspirationSortId Int?
+  isHomePageSort    Boolean?            @default(false)
+  homePageSortId    Int?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+}
+
+model InspirationDetail {
+  id            Int           @id @default(autoincrement())
+  title         String?
+  description   String?       @db.LongText
+  inspirationId Int
+  imageId       Int?          @unique
+  sortId        Int?
+  media         Media?        @relation(fields: [imageId], references: [id])
+  inspirations  Inspirations? @relation(fields: [inspirationId], references: [id], onDelete: Cascade)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Banner {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @db.LongText
+  buttonText  String?
+  buttonUrl   String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  isDeleted   Boolean? @default(false)
+  imageId     Int      @unique
+  media       Media?   @relation(fields: [imageId], references: [id])
+  updatedAt   DateTime @updatedAt
+}
+
+model Testimonial {
+  id                    Int      @id @default(autoincrement())
+  description           String?  @db.LongText
+  clientName            String?
+  clientLocation        String?
+  clientImageMedia      Media?   @relation("ClientImage", fields: [clientImageId], references: [id])
+  clientImageId         Int?
+  destinationImageMedia Media?   @relation("DestinationImage", fields: [destinationImageId], references: [id])
+  destinationImageId    Int?
+  sortId                Int?
+  isDeleted             Boolean? @default(false)
+  isActive              Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+enum testimonial_type {
+  general
+  destination
+}
+
+model Forms {
+  id                 Int       @id @default(autoincrement())
+  name               String?
+  lastName           String?
+  email              String?
+  message            String?   @db.LongText
+  phone              String?
+  subject            String?   @db.LongText
+  gReCaptchaToken    String?   @db.LongText
+  noOfTravelers      String?
+  travelingStartDate DateTime?
+  travelingEndDate   DateTime?
+  type               String    @default("contact")
+  status             String    @default("unread")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+model Faqs {
+  id        Int      @id @default(autoincrement())
+  question  String?  @db.LongText
+  answer    String?  @db.LongText
+  isDeleted Boolean? @default(false)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Configuration {
+  id              Int      @id @default(autoincrement())
+  logoId          Int?     @unique
+  favIconId       String?
+  title           String?
+  email           String?
+  phone           String?
+  whatsappNumber  String?
+  address         String?
+  siteDescription String?
+  facebookUrl     String?
+  instagramUrl    String?
+  twitterUrl      String?
+  media           Media?   @relation(fields: [logoId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Partners {
+  id        Int      @id @default(autoincrement())
+  name      String?
+  imageId   Int      @unique
+  media     Media?   @relation(fields: [imageId], references: [id])
+  isActive  Boolean  @default(true)
+  sortId    Int?
+  isDeleted Boolean? @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PlaceToVisit {
+  id                    Int           @id @default(autoincrement())
+  title                 String
+  description           String?       @db.LongText
+  attractionTitle       String?
+  imageId               Int           @unique
+  sortId                Int?
+  isDeleted             Boolean?      @default(false)
+  media                 Media?        @relation(fields: [imageId], references: [id])
+  seoMetaId             Int?          @unique
+  seoMeta               SeoMeta?      @relation(fields: [seoMetaId], references: [id])
+  attractionDescription String?       @db.LongText
+  isActive              Boolean       @default(true)
+  destinationId         Int
+  destination           Destinations? @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  reviews               Reviews[]
+  attraction            Attraction[]
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+}
+
+model Reviews {
+  id           Int           @id @default(autoincrement())
+  description  String?       @db.LongText
+  placeId      Int
+  placeToVisit PlaceToVisit? @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  imageId      Int           @unique
+  media        Media?        @relation(fields: [imageId], references: [id])
+  name         String?
+  location     String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Attraction {
+  id           Int           @id @default(autoincrement())
+  title        String
+  description  String?       @db.LongText
+  placeId      Int
+  placeToVisit PlaceToVisit? @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  imageId      Int           @unique
+  media        Media?        @relation(fields: [imageId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model SeasonToVisit {
+  id             Int           @id @default(autoincrement())
+  name           String
+  title          String
+  description    String?       @db.LongText
+  eventOccasions String?       @db.LongText
+  destinationId  Int
+  destination    Destinations? @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  imageId        Int           @unique
+  media          Media         @relation(fields: [imageId], references: [id])
+  period         String?
+  temperature    String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model ThingsToDo {
+  id            Int           @id @default(autoincrement())
+  title         String
+  description   String?       @db.LongText
+  imageId       Int           @unique
+  media         Media         @relation(fields: [imageId], references: [id])
+  isActive      Boolean       @default(true)
+  isDeleted     Boolean?      @default(false)
+  sortId        Int?
+  destinationId Int
+  destination   Destinations? @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model PlanService {
+  id        Int                  @id @default(autoincrement())
+  name      String
+  isActive  Boolean              @default(true)
+  imageId   Int                  @unique
+  media     Media?               @relation(fields: [imageId], references: [id])
+  tours     ToursToPlanService[]
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+}
+
+model Tours {
+  id                          Int                  @id @default(autoincrement())
+  title                       String
+  // destinationId               Int
+  tourDestinations            TourDestinations[]
+  description                 String?              @db.LongText
+  bannerImageId               Int?
+  bannerImageMedia            Media?               @relation("TourBannerImage", fields: [bannerImageId], references: [id])
+  accommodationImageId        Int?
+  accommodationImageMedia     Media?               @relation("AccommodationImage", fields: [accommodationImageId], references: [id])
+  seoMetaId                   Int?                 @unique
+  seoMeta                     SeoMeta?             @relation(fields: [seoMetaId], references: [id])
+  price                       Int?
+  planDays                    Int?
+  airFairIncluded             Boolean?
+  // planServiceId               Int
+  planService                 ToursToPlanService[]
+  meetingPoint                String?
+  departurePoint              String?
+  isActive                    Boolean              @default(true)
+  travelingFromDescription    String?              @db.LongText
+  weatherDescription          String?              @db.LongText
+  whenToGoDescription         String?              @db.LongText
+  cuisineDescription          String?              @db.LongText
+  overviewTitle               String?
+  overviewDescription         String?              @db.LongText
+  pricingTitle                String?
+  pricingDescription          String?              @db.LongText
+  dayToDayItinerary           DayToDayItinerary[]
+  highlights                  Highlights[]
+  privatePlan                 PrivatePlan[]
+  supplementPolicy            SupplementPolicy[]
+  sortId                      Int?
+  physicalActivityDescription String?              @db.LongText
+  makeItPrivateDescription    String?              @db.LongText
+  isFeatured                  Boolean              @default(false)
+  isDeleted                   Boolean?             @default(false)
+  tourHoliDayType             TourHolidayType[]
+  createdAt                   DateTime             @default(now())
+  updatedAt                   DateTime             @updatedAt
+}
+
+model TourDestinations {
+  id            Int @id @default(autoincrement())
+  tourId        Int
+  destinationId Int
+
+  tour        Tours        @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  destination Destinations @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+
+  // @@id([tourId, destinationId])
+}
+
+model TourHolidayType {
+  id            Int         @id @default(autoincrement())
+  tourId        Int
+  holidayTypeId Int
+  tour          Tours       @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  holidayType   HolidayType @relation(fields: [holidayTypeId], references: [id], onDelete: Cascade)
+}
+
+model ToursToPlanService {
+  id             Int         @id @default(autoincrement())
+  tourId         Int
+  planeServiceId Int
+  tours          Tours       @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  planService    PlanService @relation(fields: [planeServiceId], references: [id], onDelete: Cascade)
+
+  // @@unique([tourId, planeServiceId])
+}
+
+model DayToDayItinerary {
+  id            Int      @id @default(autoincrement())
+  destination   String?
+  description   String?  @db.LongText
+  tourId        Int
+  tours         Tours?   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  accommodation String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model PrivatePlan {
+  id             Int      @id @default(autoincrement())
+  tourId         Int
+  tours          Tours?   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  perPersonRate  String?
+  minimumPersons String?
+  maximumPersons String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model SupplementPolicy {
+  id          Int      @id @default(autoincrement())
+  tourId      Int
+  tours       Tours?   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  title       String?
+  subTitle    String?
+  description String?  @db.LongText
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Gallery {
+  id            Int           @id @default(autoincrement())
+  imageId       Int?          @unique
+  media         Media?        @relation(fields: [imageId], references: [id])
+  isActive      Boolean       @default(true)
+  destinationId Int
+  destination   Destinations? @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model BespokeQuestion {
+  id                           Int                            @id @default(autoincrement())
+  type                         String
+  question                     String?                        @db.LongText
+  formType                     String?                        @default("")
+  addOtherOption               Boolean?                       @default(false)
+  textPlaceholder              String?                        @db.LongText
+  bespokeQuestionOptions       BespokeQuestionOptions[]
+  createdAt                    DateTime                       @default(now())
+  updatedAt                    DateTime                       @updatedAt
+  BespokeFormQuestionAndAnswer BespokeFormQuestionAndAnswer[]
+}
+
+model BespokeQuestionOptions {
+  id                Int              @id @default(autoincrement())
+  label             String
+  BespokeQuestion   BespokeQuestion? @relation(fields: [bespokeQuestionId], references: [id], onDelete: Cascade)
+  bespokeQuestionId Int?
+}
+
+model BespokeForm {
+  id                           Int                            @id @default(autoincrement())
+  name                         String?
+  email                        String?
+  countryCode                  String?
+  phoneNumber                  String?
+  preferredCountry             String?
+  otherCountry                 String?
+  tripDays                     String?
+  bespokeFormQuestionAndAnswer BespokeFormQuestionAndAnswer[]
+  gReCaptchaToken              String?                        @db.LongText
+  status                       String                         @default("unread")
+  createdAt                    DateTime                       @default(now())
+  updatedAt                    DateTime                       @updatedAt
+}
+
+model BespokeFormQuestionAndAnswer {
+  id                  Int              @id @default(autoincrement())
+  questionId          Int
+  BespokeQuestion     BespokeQuestion? @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answer              String?          @db.LongText
+  additionalText      String?          @db.LongText
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  BespokeForm         BespokeForm?     @relation(fields: [bespokeFormId], references: [id], onDelete: Cascade)
+  bespokeFormId       Int?
+  becomePartnerForm   BecomePartner?   @relation(fields: [becomePartnerFormId], references: [id], onDelete: Cascade)
+  becomePartnerFormId Int?
+}
+
+model BecomePartner {
+  id                                 Int                            @id @default(autoincrement())
+  contactingAbout                    String?
+  description                        String?                        @db.LongText
+  webAddress                         String?
+  relevantDepartment                 String?
+  name                               String?
+  jobTitle                           String?
+  email                              String?
+  phone                              String?
+  gReCaptchaToken                    String?                        @db.LongText
+  status                             String                         @default("unread")
+  becomePartnerFormQuestionAndAnswer BespokeFormQuestionAndAnswer[]
+  createdAt                          DateTime                       @default(now())
+  updatedAt                          DateTime                       @updatedAt
+}
+
+model SeoMeta {
+  id           Int           @id @default(autoincrement())
+  title        String?
+  keywords     String?
+  description  String?       @db.LongText
+  slug         String?       @db.LongText
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  Inspirations Inspirations?
+  Pages        Pages?
+  Destinations Destinations?
+  Tours        Tours?
+  PlaceToVisit PlaceToVisit?
+  HolidayType  HolidayType?
+}

@@ -1,0 +1,55 @@
+@layer {
+  .ql-container {
+    @apply bg-["#0b2f3a"];
+  }
+}
+
+.light .ql-picker-options {
+  background-color: #072128 !important;
+}
+
+.dark .ql-picker-options {
+  background-color: #1a1c23 !important;
+}
+
+
+.light .ql-toolbar.ql-snow {
+  border-width: 0px 0px 1px 0px !important;
+  border-color: #072128 !important;
+}
+
+.dark .ql-toolbar.ql-snow {
+  border-width: 0px 0px 1px 0px !important;
+  border-color: #1a1c23 !important;
+}
+
+.light .ql-editor {
+  background: #0b2f3a;
+  color: #fff;
+}
+
+.ql-editor.ql-blank:before {
+  color: #fff !important;
+
+  text-transform: capitalize;
+}
+
+.dark .ql-editor {
+  background: #24262d;
+}
+
+.ql-snow .ql-stroke {
+  stroke: #fff !important;
+}
+
+.ql-editor {
+  height: 200px !important;
+}
+
+.ql-snow .ql-picker {
+  color: #fff !important;
+}
+
+.ql-container.ql-snow {
+  border: none !important;
+}

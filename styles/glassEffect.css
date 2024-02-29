@@ -1,0 +1,121 @@
+@keyframes shimmer {
+  0% {
+    opacity: 0;
+    left: -100%;
+  }
+
+  50% {
+    opacity: .8;
+  }
+
+  100% {
+    left: 120%;
+    opacity: 0;
+  }
+}
+
+.glass-effect {
+  background: rgba(9, 39, 48, 0.3);
+  /* box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  /* border-radius: 10px; */
+  /* border: 1px solid rgba(255, 255, 255, 0.18); */
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-effect::after {
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 30%;
+  max-width: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  animation: shimmer 1.5s infinite ease-in-out;
+  animation-delay: 0s;
+  content: '';
+  height: 200%;
+  transform: rotate(45deg);
+}
+
+.glass-effect span:nth-child(1)::after {
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 30%;
+  max-width: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  animation: shimmer 1.5s infinite ease-in-out;
+  animation-delay: .15s;
+  content: '';
+  height: 200%;
+  transform: rotate(45deg);
+}
+
+.glass-effect span:nth-child(2)::after {
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 30%;
+  max-width: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  animation: shimmer 1.5s infinite ease-in-out;
+  animation-delay: .25s;
+  content: '';
+  height: 200%;
+  transform: rotate(45deg);
+}
+
+.glass-banner-effect {
+  background: rgba(9, 39, 48, 0.3);
+  /* box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  /* border-radius: 10px; */
+  /* border: 1px solid rgba(255, 255, 255, 0.18); */
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-banner-effect::after {
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 30%;
+  max-width: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  animation: shimmer 2.5s infinite ease-in-out;
+  animation-delay: 0s;
+  content: '';
+  height: 200%;
+  transform: rotate(45deg);
+}
+
+.glass-banner-effect span:nth-child(1)::after {
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 30%;
+  max-width: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  animation: shimmer 2.5s infinite ease-in-out;
+  animation-delay: .15s;
+  content: '';
+  height: 200%;
+  transform: rotate(45deg);
+}
+
+.glass-banner-effect span:nth-child(2)::after {
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 30%;
+  max-width: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  animation: shimmer 2.5s infinite ease-in-out;
+  animation-delay: .25s;
+  content: '';
+  height: 200%;
+  transform: rotate(45deg);
+}
